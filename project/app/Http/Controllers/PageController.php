@@ -13,4 +13,8 @@ class PageController extends Controller
     public function login(){
         return view('login');
     }
+
+    public function org(){
+        return view('org');
+    }
 }

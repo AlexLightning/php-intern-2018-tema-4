@@ -23,6 +23,11 @@
   <body>
     <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Jazz Festivals</a>
+      <!--<ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+          <a class="nav-link" href="/login">Admin Login</a>
+        </li>
+      </ul>-->
     </nav>
 
     <div class="container-fluid">
@@ -31,15 +36,15 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link active" href="/">
+                <a class="nav-link inactive" href="/">
                   <span data-feather="home"></span>
-                  Home <span class="sr-only">(current)</span>
+                  Home <span class="sr-only"></span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link inactive" href="/organizers">
+                <a class="nav-link active" href="/organizers">
                   <span data-feather="user"></span>
-                  Organizers <span class="sr-only"></span>
+                  Organizers <span class="sr-only">(current)</span>
                 </a>
               </li>
             </ul>
@@ -48,15 +53,13 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">          
 
-          <h2>Upcoming Jazz Festivals</h2>
+          <h2>Organizers</h2>
           <div class="table-responsive">
             <table id="festable" class="table table-striped table-sm">
               <thead>
                 <tr>
                   <th>Name</th>
                   <th>Description</th>
-                  <th>Bands</th>
-                  <th>No. of Tickets</th>
                   <th>Options</th>
                 </tr>
               </thead>
@@ -65,10 +68,10 @@
               </tbody>
             </table>
           </div>
-          <button type="button" id="add" class="btn btn-success">Add new festival</button>
+          <button type="button" id="add" class="btn btn-success">Add new organizer</button>
 
           <form style="display: none;" id="formular">
-            <h2>Add festival</h2>
+            <h2>Add organizer</h2>
             <p>All fields are required</p>
             <div class="form-group">
               <label for="name">Name</label>
@@ -78,20 +81,12 @@
               <label for="desc">Description</label>
               <input type="text" class="form-control" name="description" required>
             </div>
-            <div class="form-group">
-              <label for="bands">Bands</label>
-              <input type="text" class="form-control" name="bands" required>
-            </div>
-            <div class="form-group">
-              <label for="tickets">No. of tickets</label>
-              <input type="text" class="form-control" name="tickets" required>
-            </div>
             <button id="adddb" type="submit" class="btn btn-primary">Submit</button>
           </form>
 
 
           <form style="display: none;" id="formular2">
-            <h2>Update festival</h2>
+            <h2>Update organizer</h2>
             <p>All fields are required</p>
             <div class="form-group">
               <label for="name">Name</label>
@@ -100,14 +95,6 @@
             <div class="form-group">
               <label for="desc">Description</label>
               <input id="description2" type="text" class="form-control" name="description" required>
-            </div>
-            <div class="form-group">
-              <label for="bands">Bands</label>
-              <input id="bands2" type="text" class="form-control" name="bands" required>
-            </div>
-            <div class="form-group">
-              <label for="tickets">No. of tickets</label>
-              <input id="tickets2" type="text" class="form-control" name="tickets" required>
             </div>
             <button id="updb" type="submit" class="btn btn-primary">Submit</button>
           </form>
@@ -138,12 +125,10 @@
         $(document).ready( function () {
             var table = $('#festable').DataTable(
                 {
-                    "ajax": "http://jazz.api.local/festivals",
+                    "ajax": "http://jazz.api.local/organizers",
                     "columns": [
                         { "data": "name" },
                         { "data": "description" },
-                        { "data": "bands" },
-                        { "data": "tickets" },
                         { "data": "id",
                           "render": function (data, type, row, meta ) {
                             return '<button id="update" class="btn btn-primary btn-sm" style="width:49%;" data-id="' + data + '" type="button">Update</button>'
@@ -154,7 +139,7 @@
                         "targets": "_all"
                       },
                       {
-                        "targets": 4,
+                        "targets": 2,
                         "orderable": false
                       }
                     ],
@@ -170,7 +155,7 @@
           if(x)
           {
               var id = $(this).attr('data-id');
-            $.ajax({url: "http://jazz.api.local/festivals/"+id, type: 'DELETE', success: function(result){
+            $.ajax({url: "http://jazz.api.local/organizers/"+id, type: 'DELETE', success: function(result){
                 location.reload(); }});
           }   
         } );
@@ -189,7 +174,7 @@
           var myformdata = $('#formular').serialize();
           $.ajax({
           
-          url: "http://jazz.api.local/festivals", 
+          url: "http://jazz.api.local/organizers", 
           type: 'POST', 
           data: myformdata,
           success: function(result,data){
@@ -210,17 +195,13 @@
               var id = $(this).attr('data-id');
               $.ajax({
                   type: "GET",
-                  url: "http://jazz.api.local/festivals/"+id,
+                  url: "http://jazz.api.local/organizers/"+id,
                   data: [{ "data": "name" },
-                        { "data": "description" },
-                        { "data": "bands" },
-                        { "data": "tickets" }],
+                        { "data": "description" }],
                   success: function(data){
                       festivalData = JSON.parse(data);
                       $('#name2').val(festivalData.name);
                       $('#description2').val(festivalData.description);
-                      $('#bands2').val(festivalData.bands);
-                      $('#tickets2').val(festivalData.tickets);
                   }
               });
 
@@ -228,7 +209,7 @@
                 $(document).on('click', '#updb', function (event) {
                 event.preventDefault();
                 var myformdata = $('#formular2').serialize();
-              $.ajax({url: "http://jazz.api.local/festivals/"+id, 
+              $.ajax({url: "http://jazz.api.local/organizers/"+id, 
                 type: 'PUT', 
                 data: myformdata,
                 success: function(result){
@@ -241,8 +222,6 @@
               $('#formular2').hide();
               $('#name2').val("");
               $('#description2').val("");
-              $('#bands2').val("");
-              $('#tickets2').val("");
             }
 
 

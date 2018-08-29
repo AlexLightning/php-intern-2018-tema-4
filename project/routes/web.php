@@ -12,4 +12,5 @@
 */
 
 Route::get('/','PageController@index');
+Route::get('/organizers','PageController@org');
 Route::get('/login','PageController@login');
